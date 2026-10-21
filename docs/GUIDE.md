@@ -380,6 +380,7 @@ _case("login", "redesign", "click", html=..., marker='button:has-text("Sign in")
 | PowerShell activation blocked | script policy | `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` (once, admin) |
 | `NameError` in a test | missing method | method added in the corresponding step (kept in git) |
 | heal attempt says `unhealable` | no candidate passed the confidence/uniqueness/validate guard | test fails LOUDLY by design (never a silent fake pass); check the `error` field + rationale |
+| CI firefox job fails: `Executable doesn't exist .../chromium_headless_shell-...` | matrix wired the browser to the INSTALLER but not to the TESTS (tests read `config/*.yaml` `browser:`) | `BROWSER: ${{ matrix.browser }}` env in the job + `os.getenv("BROWSER", …)` override in `config.py` — fixed; rule: *launch what you installed* |
 
 ---
 

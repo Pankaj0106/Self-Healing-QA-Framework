@@ -42,6 +42,7 @@ jobs:
     env:
       LLM_PROVIDER: mock        # zero-cost healing in CI
       HEADLESS: "true"
+      BROWSER: ${{ matrix.browser }}   # wire the matrix to the TESTS, not just the installer
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

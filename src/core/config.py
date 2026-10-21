@@ -38,6 +38,7 @@ def load_settings(env: str | None = None) -> Settings:
 
     # Env overrides (CI secrets safe)
     data["base_url"] = os.getenv("BASE_URL", data["base_url"])
+    data["browser"] = os.getenv("BROWSER", data["browser"])   # CI matrix override
     data["llm_provider"] = os.getenv("LLM_PROVIDER", data["llm_provider"])
     data["llm_model"] = os.getenv("LLM_MODEL", data["llm_model"])
     if os.getenv("HEADLESS") is not None:
