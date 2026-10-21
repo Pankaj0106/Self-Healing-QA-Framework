@@ -1,0 +1,86 @@
+{
+  "signup_login_btn": {
+    "primary": "text=Signup / Login",
+    "strategy": "text",
+    "intent": "Signup or Login link",
+    "healed": null,
+    "history": []
+  },
+  "email_field": {
+    "primary": "input[data-qa=login-email]",
+    "strategy": "css",
+    "intent": "Email input on login form",
+    "healed": null,
+    "history": []
+  },
+  "password_field": {
+    "primary": "input[data-qa=login-password]",
+    "strategy": "css",
+    "intent": "Password input on login form",
+    "healed": null,
+    "history": []
+  },
+  "login_submit": {
+    "primary": "button[data-qa=login-button]",
+    "strategy": "css",
+    "intent": "Submit login form",
+    "healed": null,
+    "history": []
+  },
+  "signup_name_field": {
+    "primary": "input[data-qa=signup-name]",
+    "strategy": "css",
+    "intent": "Name input on signup form",
+    "healed": null,
+    "history": []
+  },
+  "signup_email_field": {
+    "primary": "input[data-qa=signup-email]",
+    "strategy": "css",
+    "intent": "Email input on signup form",
+    "healed": null,
+    "history": []
+  },
+  "signup_submit": {
+    "primary": "button[data-qa=signup-button]",
+    "strategy": "css",
+    "intent": "Submit signup form",
+    "healed": null,
+    "history": []
+  },
+  "products_nav": {
+    "primary": "text=Products",
+    "strategy": "text",
+    "intent": "Products navigation link",
+    "healed": null,
+    "history": []
+  },
+  "search_input": {
+    "primary": "#search_product",
+    "strategy": "css",
+    "intent": "Product search input",
+    "healed": null,
+    "history": []
+  },
+  "search_button": {
+    "primary": "#submit_search",
+    "strategy": "css",
+    "intent": "Submit product search",
+    "healed": null,
+    "history": []
+  },
+  "first_product_title": {
+    "primary": ".product-image-wrapper >> nth=0 >> .product-title",
+    "strategy": "css",
+    "intent": "First product title in results",
+    "healed": null,
+    "history": []
+  },
+  "add_to_cart_btn": {
+    "primary": ".overlay >> nth=0 >> text=Add to cart",
+    "strategy": "css",
+    "intent": "Add first product to cart",
+    "healed": null,
+    "history": []
+  }
+}

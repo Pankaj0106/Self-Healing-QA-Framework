@@ -1,0 +1,37 @@
+[project]
+name = "self-healing-qa-framework"
+version = "0.1.0"
+description = "AI self-healing UI test framework (Playwright + pytest + LLM)"
+requires-python = ">=3.11"
+dependencies = [
+  "playwright>=1.44",
+  "pytest>=8.0",
+  "pytest-xdist>=3.6",
+  "pyyaml>=6.0",
+  "python-dotenv>=1.0",
+  "loguru>=0.7",
+  "allure-pytest>=2.13",
+  "openai>=1.30",
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "black", "mypy", "pytest-mock"]
+mcp = ["mcp>=1.2,<2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --alluredir=reports/allure-results"
+markers = [
+  "smoke: fast critical-path UI checks (runs on every PR)",
+  "regression: full suite",
+  "eval: offline heal-accuracy benchmark",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.black]
+line-length = 100
+
+[build-system]
+requires = ["setuptools"]

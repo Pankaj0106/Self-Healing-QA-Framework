@@ -1,0 +1,135 @@
+# CI = GitHub's cloud robot. Every push/PR it:
+#   1. checks out the code into a fresh Linux machine
+#   2. installs Python 3.12 + our dependencies
+#   3. runs unit tests, then UI smoke on 2 browsers
+#   4. uploads Allure results + screenshots as downloadable artifacts
+#   5. enforces the heal-rate gate (healer accuracy threshold)
+# No API key needed: LLM_PROVIDER defaults to the free mock provider.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 3 * * *"        # nightly at 03:00 UTC (catches site drift)
+  workflow_dispatch:            # manual "Run workflow" button in GitHub UI
+
+jobs:
+  unit:
+    name: Unit tests (offline)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e ".[dev]"
+      - name: Run unit tests
+        run: python -m pytest tests/unit -q
+
+  ui:
+    name: Smoke (${{ matrix.browser }})
+    needs: unit                 # UI layer runs only if the brain is healthy
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false          # one browser failing shouldn't kill the other
+      matrix:
+        browser: [chromium, firefox]
+    env:
+      LLM_PROVIDER: mock        # zero-cost healing in CI
+      HEADLESS: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e ".[dev]"
+      - name: Install ${{ matrix.browser }}
+        run: python -m playwright install ${{ matrix.browser }} --with-deps
+      - name: Run smoke suite
+        run: python -m pytest tests/ui -m smoke -q
+      - name: Heal-rate gate
+        run: python scripts/heal_gate.py --min 0.70
+      - name: Upload Allure results
+        if: always()            # artifacts even when tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.browser }}
+          path: reports/allure-results
+          if-no-files-found: ignore
+      - name: Upload failure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ matrix.browser }}
+          path: reports/screenshots
+          if-no-files-found: ignore
+
+  eval:
+    name: Heal-quality benchmark
+    needs: ui                 # only spend CI time if the site tests passed
+    runs-on: ubuntu-latest
+    env:
+      HEADLESS: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e ".[dev]"
+      - name: Install chromium
+        run: python -m playwright install chromium --with-deps
+      - name: Run offline benchmark
+        run: python -m pytest tests/eval -q
+      - name: Upload eval report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: reports/eval_report.*
+          if-no-files-found: ignore
+
+  publish:
+    name: Status page (GitHub Pages)
+    needs: [ui, eval]           # evidence only public if everything above passed
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: true
+    env:
+      HEADLESS: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e ".[dev]"
+      - name: Install chromium
+        run: python -m playwright install chromium --with-deps
+      - name: Regenerate evidence locally (deterministic, cheap)
+        run: |
+          python -m pytest tests/eval -q
+          python scripts/demo_heal.py
+      - name: Build status page
+        run: python scripts/build_status_page.py
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

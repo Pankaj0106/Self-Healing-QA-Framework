@@ -1,0 +1,8 @@
+base_url: "https://automationexercise.com"
+browser: "chromium"
+headless: true
+timeout_ms: 15000
+heal_enabled: true
+max_heal_calls: 20
+llm_provider: "mock"
+llm_model: "mock-1"

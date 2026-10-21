@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+.venv/
+.pytest_cache/
+reports/
+_site/
+.env
+healed_locators.patch
+heal_metrics.json
+
+# Playwright
+/test-results/
+/playwright-report/
+
+# IDE
+.vscode/
+.idea/

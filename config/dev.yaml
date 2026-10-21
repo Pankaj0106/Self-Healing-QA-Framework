@@ -1,0 +1,12 @@
+base_url: "https://automationexercise.com"
+browser: "chromium"
+headless: false
+timeout_ms: 10000
+heal_enabled: true
+max_heal_calls: 20
+# Scripted service provider based on ADR-001 (docs/DECISIONS.md):
+#  default = free mock; real healing = Ollama (local, free) per the accepted decision.
+# To activate Ollama: install it (ollama.com), `ollama pull qwen2.5:3b`,
+# then change llm_provider below to "ollama" (or set LLM_PROVIDER=ollama env var).
+llm_provider: "mock"
+llm_model: "mock-1"
